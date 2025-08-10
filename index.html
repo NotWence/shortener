@@ -1,9 +1,39 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta http-equiv="refresh" content="0;url=https://youtube.com">
-  </head>
-  <body>
-    <p>Redirecting...</p>
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <title>Redirect from Google Doc</title>
+</head>
+<body>
+  <h1>Redirecting...</h1>
+  <p id="fallback" style="display:none;">
+    If you weren't redirected, <a id="manualLink" href="#">click here</a>.
+  </p>
+
+  <script>
+    const DOC_ID = "1CkSYFWe86SVp7I10xHpnzqeS9T0iDP5ZAaiYTPYHEb0";
+    const cacheBuster = Date.now();
+    const DOC_URL = `https://docs.google.com/document/d/${DOC_ID}/export?format=txt&nocache=${cacheBuster}`;
+    const PROXY_URL = `https://api.allorigins.win/raw?url=${encodeURIComponent(DOC_URL)}`;
+
+    fetch(PROXY_URL, { cache: "no-store" })
+      .then(res => res.text())
+      .then(text => {
+        const url = text.trim();
+        console.log("Redirecting to:", url);
+
+        // Show fallback link
+        const linkElement = document.getElementById("manualLink");
+        linkElement.href = url;
+        document.getElementById("fallback").style.display = "block";
+
+        // Redirect
+        window.location.href = url;
+      })
+      .catch(err => {
+        console.error("Error fetching doc:", err);
+        document.body.innerHTML = `<p>Error: ${err}</p>`;
+      });
+  </script>
+</body>
 </html>
